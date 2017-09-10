@@ -1,4 +1,4 @@
-package umuc.slack.bot.slack;
+package bot.slack;
 
 import me.ramswaroop.jbot.core.slack.Bot;
 import me.ramswaroop.jbot.core.slack.Controller;

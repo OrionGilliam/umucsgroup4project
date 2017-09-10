@@ -1,4 +1,4 @@
-package umuc.slack.bot.slack;
+package bot.slack;
 
 public class SlashWikiCommand {
 }
