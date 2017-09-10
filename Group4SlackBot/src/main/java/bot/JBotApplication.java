@@ -1,9 +1,9 @@
-package example.jbot;
+package bot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "example.jbot"})
+@SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "bot"})
 public class JBotApplication {
 
     /**
