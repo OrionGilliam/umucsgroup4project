@@ -1,4 +1,4 @@
-package example.jbot.slack;
+package umuc.slack.bot.slack;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
