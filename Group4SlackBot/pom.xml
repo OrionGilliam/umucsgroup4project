@@ -10,8 +10,7 @@
         <relativePath/>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>projectSlackBot</artifactId>
+    <artifactId>Group4SlackBot</artifactId>
     <name>Group 4 Slackbot</name>
     <packaging>jar</packaging>
     <version>1.0</version>
