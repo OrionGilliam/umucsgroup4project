@@ -11,6 +11,10 @@
         <relativePath/>
     </parent>
 
+    <modules>
+        <module>Group4SlackBot</module>
+    </modules>
+
     <groupId>umucgroup4project</groupId>
     <artifactId>projectSlackBot</artifactId>
     <packaging>pom</packaging>
