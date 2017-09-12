@@ -67,6 +67,8 @@ public class SlackSlashCommand {
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
         }
 
+
+
         /** build response */
         RichMessage richMessage = new RichMessage("The is Heroku Commander!");
         richMessage.setResponseType("in_channel");
