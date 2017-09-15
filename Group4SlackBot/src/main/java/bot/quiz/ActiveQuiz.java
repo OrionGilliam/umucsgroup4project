@@ -20,7 +20,7 @@ public class ActiveQuiz {
         this.wrong = 0;
 
         this.usedQuestions = new ArrayList<Integer>();
-        currentQuestion = selectQuestion.nextInt(QuizQuestions.numberQuestions() +1 );
+        currentQuestion = selectQuestion.nextInt(QuizQuestions.numberQuestions() ) + 1;
     }
 
     public String answerQuestion(String answer){
@@ -45,7 +45,8 @@ public class ActiveQuiz {
     public String askQuestion(){
         JSONObject question = QuizQuestions.getQuestion(currentQuestion);
 
-        return question.getString("question");
+        String fullQuestion = question.getString("question") + "\na: " + question.getString("a") + "\nb: " + question.getString("b") + "\nc: " + question.getString("c") + "\nd: " + question.getString("d" );
+        return fullQuestion;
     }
 
     public String getUserName(){

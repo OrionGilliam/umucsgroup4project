@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -24,6 +25,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+
+
 
 @RestController
 public class SlashQuiz {
@@ -47,12 +50,37 @@ public class SlashQuiz {
         this.activeQuizes = new ArrayList<ActiveQuiz>();
     }
 
-
+    /**
+     * Slash Command handler. When a user types for example "/app help"
+     * then slack sends a POST request to this endpoint. So, this endpoint
+     * should match the url you set while creating the Slack Slash Command.
+     *
+     * @param token
+     * @param teamId
+     * @param teamDomain
+     * @param channelId
+     * @param channelName
+     * @param userId
+     * @param userName
+     * @param command
+     * @param text
+     * @param responseUrl
+     * @return
+     */
     //insert slash command value here
     @RequestMapping(value = "/quiz",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public RichMessage onReceiveSlashCommand(String token, String teamId, String teamDomain, String channelId, String channelName, String userId, String userName, String command, String text, String responseUrl) {
+    public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
+                                             @RequestParam("team_id") String teamId,
+                                             @RequestParam("team_domain") String teamDomain,
+                                             @RequestParam("channel_id") String channelId,
+                                             @RequestParam("channel_name") String channelName,
+                                             @RequestParam("user_id") String userId,
+                                             @RequestParam("user_name") String userName,
+                                             @RequestParam("command") String command,
+                                             @RequestParam("text") String text,
+                                             @RequestParam("response_url") String responseUrl) {
         // validate token
         if (!token.equals(slackToken)) {
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
@@ -63,18 +91,19 @@ public class SlashQuiz {
 
         String response = "";
 
-        if(command.equalsIgnoreCase("trivia")){
+        if(text.equalsIgnoreCase("trivia")){
             if(checkUserName(userName)){
                 ActiveQuiz currentUser = getUserQuiz(userName);
                 response = "You are actively in the quiz, please select an answer " + currentUser.askQuestion();
             }else{
                 activeQuizes.add(new ActiveQuiz(userName));
-                getUserQuiz(userName).askQuestion();
+               ActiveQuiz currentQuiz = getUserQuiz(userName);
+               response = currentQuiz.askQuestion();
             }
-        }else if(command.matches("a|b|c|d")){
+        }else if(text.matches("a|b|c|d")){
             if(checkUserName(userName)){
                 ActiveQuiz currentUser = getUserQuiz(userName);
-                response = currentUser.answerQuestion(command);
+                response = currentUser.answerQuestion(text);
                 int correct = currentUser.getCorrect();
                 int wrong = currentUser.getWrong();
                 int remainingQuestions = totalQuestions - correct - wrong;
@@ -117,7 +146,7 @@ public class SlashQuiz {
 
     private boolean checkUserName(String distinctUser){
         for(ActiveQuiz user : activeQuizes){
-            if(distinctUser.equals(user)){
+            if(distinctUser.equals(user.getUserName())){
                 return true;
             }
         }

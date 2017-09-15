@@ -49,7 +49,7 @@ public class SlackSlashCommand {
      * @param responseUrl
      * @return
      */
-    @RequestMapping(value = "/heroku-command",
+    @RequestMapping(value = "/butts-command",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,

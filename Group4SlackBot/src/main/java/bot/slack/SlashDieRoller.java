@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Random;
@@ -26,12 +27,36 @@ public class SlashDieRoller {
     private String slackToken;
     private Random rand = new Random();
 
-
-    //insert slash command value here
+    /**
+     * Slash Command handler. When a user types for example "/app help"
+     * then slack sends a POST request to this endpoint. So, this endpoint
+     * should match the url you set while creating the Slack Slash Command.
+     *
+     * @param token
+     * @param teamId
+     * @param teamDomain
+     * @param channelId
+     * @param channelName
+     * @param userId
+     * @param userName
+     * @param command
+     * @param text
+     * @param responseUrl
+     * @return
+     */
     @RequestMapping(value = "/roll",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public RichMessage onReceiveSlashCommand(String token, String teamId, String teamDomain, String channelId, String channelName, String userId, String userName, String command, String text, String responseUrl) {
+    public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
+                                             @RequestParam("team_id") String teamId,
+                                             @RequestParam("team_domain") String teamDomain,
+                                             @RequestParam("channel_id") String channelId,
+                                             @RequestParam("channel_name") String channelName,
+                                             @RequestParam("user_id") String userId,
+                                             @RequestParam("user_name") String userName,
+                                             @RequestParam("command") String command,
+                                             @RequestParam("text") String text,
+                                             @RequestParam("response_url") String responseUrl) {
         // validate token
         if (!token.equals(slackToken)) {
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");

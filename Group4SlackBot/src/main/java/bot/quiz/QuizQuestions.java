@@ -17,7 +17,8 @@ public class QuizQuestions {
     }
 
     public static JSONObject getQuestion(int questionNumber){
-        return questions.get(questionNumber);
+        JSONObject obj = questions.get(questionNumber);
+        return obj;
     }
 
     public static int numberQuestions(){
