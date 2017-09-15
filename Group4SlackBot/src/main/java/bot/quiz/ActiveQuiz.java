@@ -20,7 +20,7 @@ public class ActiveQuiz {
         this.wrong = 0;
 
         this.usedQuestions = new ArrayList<Integer>();
-        currentQuestion = selectQuestion.nextInt(QuizQuestions.numberQuestions() ) + 1;
+        newQuestion();
     }
 
     public String answerQuestion(String answer){
@@ -58,11 +58,11 @@ public class ActiveQuiz {
     }
 
     private void newQuestion(){
-        if(wrong + correct != QuizQuestions.numberQuestions()){
-            int myQ = selectQuestion.nextInt(QuizQuestions.numberQuestions() + 1);
+        if(wrong + correct <= QuizQuestions.numberQuestions()){
+            int myQ = selectQuestion.nextInt(QuizQuestions.numberQuestions()) + 1;
 
             while(usedQuestions.contains(myQ)){
-                myQ = selectQuestion.nextInt(QuizQuestions.numberQuestions() + 1);
+                myQ = selectQuestion.nextInt(QuizQuestions.numberQuestions()) + 1;
             }
 
             currentQuestion = myQ;
