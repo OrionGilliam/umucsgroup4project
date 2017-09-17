@@ -36,9 +36,9 @@ import java.net.URLConnection;
 
 
 @RestController
-public class SlackWikiCommand {
+public class SlashWiki {
     private static final Logger logger = LoggerFactory.getLogger
-            (SlackWikiCommand.class);
+            (SlashWiki.class);
     /**
      * The token you get while creating a new Slash Command. You
      * should paste the token in application.properties file.
@@ -120,7 +120,7 @@ public class SlackWikiCommand {
                         WikiResponse.class);
                 if (response.query.pages != null && response.query.pages.size() >
                         0) {
-                    Page firstReturnedPage = response.query.pages.get(0);
+                    WikiPage firstReturnedPage = response.query.pages.get(0);
                     if (firstReturnedPage.extract != null
                             && !firstReturnedPage.extract.equals("")) {
                         richMessage.setText(firstReturnedPage.title);
