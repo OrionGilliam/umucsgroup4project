@@ -1,5 +1,7 @@
 package bot.slack;
 
+import bot.wiki.WikiPage;
+import bot.wiki.WikiResponse;
 import com.google.gson.Gson;
 import me.ramswaroop.jbot.core.slack.models.Attachment;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
