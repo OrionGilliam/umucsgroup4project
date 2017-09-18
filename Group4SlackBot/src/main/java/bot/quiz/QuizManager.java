@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 public class QuizManager {
@@ -22,7 +23,13 @@ public class QuizManager {
     public QuizManager(int totalQuestions) {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
         try {
-            logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*").toString());
+
+           Enumeration en =  ClassLoader.getSystemClassLoader().getResources("*");
+
+           while(en.hasMoreElements()){
+               logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*").nextElement());
+           }
+
 
             File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
