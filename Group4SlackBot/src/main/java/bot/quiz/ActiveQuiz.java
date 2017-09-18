@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActiveQuiz {
     private String userName;
@@ -14,20 +15,20 @@ public class ActiveQuiz {
     private int correct=0;
     private int wrong=0;
 
-    public ActiveQuiz(String userName){
+    ActiveQuiz(String userName){
         this.userName = userName;
         this.correct = 0;
         this.wrong = 0;
 
-        this.usedQuestions = new ArrayList<Integer>();
+        this.usedQuestions = new ArrayList<>();
         newQuestion();
     }
 
-    public String answerQuestion(String answer){
+    String answerQuestion(String answer){
         JSONObject que = QuizQuestions.getQuestion(currentQuestion);
-        boolean reply = answer.equalsIgnoreCase(que.getString("answer"));
+        AtomicBoolean reply = new AtomicBoolean(answer.equalsIgnoreCase(que.getString("answer")));
 
-        if(reply == true){
+        if(reply.get()){
             correct++;
             usedQuestions.add(currentQuestion);
             newQuestion();
@@ -42,20 +43,19 @@ public class ActiveQuiz {
         }
     }
 
-    public String askQuestion(){
+    String askQuestion(){
         JSONObject question = QuizQuestions.getQuestion(currentQuestion);
 
-        String fullQuestion = question.getString("question") + "\na: " + question.getString("a") + "\nb: " + question.getString("b") + "\nc: " + question.getString("c") + "\nd: " + question.getString("d" );
-        return fullQuestion;
+        return question.getString("question") + "\na: " + question.getString("a") + "\nb: " + question.getString("b") + "\nc: " + question.getString("c") + "\nd: " + question.getString("d" );
     }
 
-    public String getUserName(){
+    String getUserName(){
         return userName;
     }
 
-    public int totalQuestionsl(){
+    /*public int totalQuestionsl(){
       return correct + wrong;
-    }
+    }*/
 
     private void newQuestion(){
         if(wrong + correct <= QuizQuestions.numberQuestions()){
@@ -71,11 +71,11 @@ public class ActiveQuiz {
         }
     }
 
-    public int getCorrect(){
+    int getCorrect(){
         return correct;
     }
 
-    public int getWrong(){
+    int getWrong(){
         return wrong;
     }
 

@@ -22,7 +22,7 @@ public class QuizManager {
         JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
         new QuizQuestions(obj);
 
-        activeQuizes = new ArrayList<ActiveQuiz>();
+        activeQuizes = new ArrayList<>();
     }
 
     public String conductQuiz(String userName, String text){

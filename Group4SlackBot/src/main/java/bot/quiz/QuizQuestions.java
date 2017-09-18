@@ -8,30 +8,29 @@ import java.util.Map;
 public class QuizQuestions {
     private static Map<Integer, JSONObject> questions;
 
-    public QuizQuestions(JSONObject quizQuestions){
+    QuizQuestions(JSONObject quizQuestions){
         questions = quizQuestions(quizQuestions);
     }
 
-    public static Map<Integer, JSONObject> getQuestions(){
+   /* public static Map<Integer, JSONObject> getQuestions(){
         return questions;
+    }*/
+
+    static JSONObject getQuestion(int questionNumber){
+        return questions.get(questionNumber);
     }
 
-    public static JSONObject getQuestion(int questionNumber){
-        JSONObject obj = questions.get(questionNumber);
-        return obj;
-    }
-
-    public static int numberQuestions(){
+    static int numberQuestions(){
         return questions.size();
     }
 
-    private HashMap quizQuestions(JSONObject quizQuestions){
+    private Map<Integer, JSONObject> quizQuestions(JSONObject quizQuestions){
         int mapKey = 1;
-        Map<Integer, JSONObject> quizes = new HashMap();
+        Map<Integer, JSONObject> quizes = new HashMap<>();
         for(String key : quizQuestions.keySet()){
             quizes.put(mapKey, quizQuestions.getJSONObject(key));
             mapKey++;
         }
-        return (HashMap) quizes;
+        return quizes;
     }
 }
