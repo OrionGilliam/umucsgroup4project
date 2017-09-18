@@ -13,24 +13,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Sample Slash Command Handler.
- *
- * @author ramswaroop
- * @version 1.0.0, 20/06/2016
- */
+import java.util.Random;
+
 @RestController
-public class SlackSlashCommand {
+public class SlashDieRoller {
 
-    private static final Logger logger = LoggerFactory.getLogger(SlackSlashCommand.class);
 
-    /**
-     * The token you get while creating a new Slash Command. You
-     * should paste the token in application.properties file.
-     */
-    @Value("${slashCommandToken}")
+
+    private static final Logger logger = LoggerFactory.getLogger(SlashDieRoller.class);
+
+    //Insert your meaningful token name here
+    @Value("${slashDieRollToken}")
     private String slackToken;
-
+    private Random rand = new Random();
 
     /**
      * Slash Command handler. When a user types for example "/app help"
@@ -49,7 +44,7 @@ public class SlackSlashCommand {
      * @param responseUrl
      * @return
      */
-    @RequestMapping(value = "/butts-command",
+    @RequestMapping(value = "/roll",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
@@ -68,16 +63,46 @@ public class SlackSlashCommand {
         }
 
 
+        String dice = text;
+        String returnResult = "Dice rolled: ";
 
-        /** build response */
-        RichMessage richMessage = new RichMessage("The is Heroku Commander!");
+        try{
+            String[] splitdice = dice.split("d");
+            int numbDice = Integer.parseInt(splitdice[0]);
+            int numbSides = Integer.parseInt(splitdice[1]);
+
+            int[] results = new int[numbDice];
+            int total = 0;
+
+
+
+            for (int i = 0; i < results.length; i++){
+                results[i] = rand.nextInt(numbSides) + 1;
+
+                if(i ==0){
+                    returnResult += results[i];
+                }
+                else{
+                    returnResult += ", " + results[i];
+                }
+                total += results[i];
+            }
+
+            returnResult += ".  Total: " + total;
+        }catch(Exception e){
+            returnResult = "Dice format error";
+        }
+
+
+        //inserts initial greeting/first line of response
+        RichMessage richMessage = new RichMessage("Dice Roller");
         richMessage.setResponseType("in_channel");
-        // set attachments
+        // set attachments.  Assure that it is set to the number of lines you intend to add to the response
         Attachment[] attachments = new Attachment[1];
         attachments[0] = new Attachment();
-        attachments[0].setText("I will perform all tasks for you.");
+        attachments[0].setText(returnResult);
         richMessage.setAttachments(attachments);
-        
+
         // For debugging purpose only
         if (logger.isDebugEnabled()) {
             try {
@@ -86,7 +111,7 @@ public class SlackSlashCommand {
                 logger.debug("Error parsing RichMessage: ", e);
             }
         }
-        
+
         return richMessage.encodedMessage(); // don't forget to send the encoded message to Slack
     }
 }

@@ -1,9 +1,10 @@
 package bot.slack;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import me.ramswaroop.jbot.core.slack.models.Attachment;
+import bot.quiz.ActiveQuiz;
+import bot.quiz.QuizManager;
+import bot.quiz.QuizQuestions;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,24 +14,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Sample Slash Command Handler.
- *
- * @author ramswaroop
- * @version 1.0.0, 20/06/2016
- */
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
+
+
+
 @RestController
-public class SlackSlashCommand {
+public class SlashQuiz {
 
-    private static final Logger logger = LoggerFactory.getLogger(SlackSlashCommand.class);
 
-    /**
-     * The token you get while creating a new Slash Command. You
-     * should paste the token in application.properties file.
-     */
-    @Value("${slashCommandToken}")
+    private static final Logger logger = LoggerFactory.getLogger(SlashQuiz.class);
+
+    //Insert your meaningful token name here
+    @Value("${slashQuizToken}")
     private String slackToken;
 
+    private QuizManager qm;
+
+    private final int QUESTIONS_TO_ASK = 2;
+
+    public SlashQuiz() throws IOException {
+     this.qm = new QuizManager(QUESTIONS_TO_ASK);
+    }
 
     /**
      * Slash Command handler. When a user types for example "/app help"
@@ -49,7 +56,8 @@ public class SlackSlashCommand {
      * @param responseUrl
      * @return
      */
-    @RequestMapping(value = "/butts-command",
+    //insert slash command value here
+    @RequestMapping(value = "/quiz",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
@@ -68,25 +76,20 @@ public class SlackSlashCommand {
         }
 
 
-
         /** build response */
-        RichMessage richMessage = new RichMessage("The is Heroku Commander!");
-        richMessage.setResponseType("in_channel");
-        // set attachments
-        Attachment[] attachments = new Attachment[1];
-        attachments[0] = new Attachment();
-        attachments[0].setText("I will perform all tasks for you.");
-        richMessage.setAttachments(attachments);
-        
-        // For debugging purpose only
-        if (logger.isDebugEnabled()) {
-            try {
-                logger.debug("Reply (RichMessage): {}", new ObjectMapper().writeValueAsString(richMessage));
-            } catch (JsonProcessingException e) {
-                logger.debug("Error parsing RichMessage: ", e);
-            }
-        }
-        
-        return richMessage.encodedMessage(); // don't forget to send the encoded message to Slack
+
+        String response = "";
+
+
+        response = qm.conductQuiz(userName, text);
+
+        return formResponse(response).encodedMessage();
     }
+
+    private RichMessage formResponse(String response){
+        return new RichMessage(response);
+    }
+
+
+
 }
