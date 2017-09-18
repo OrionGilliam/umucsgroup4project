@@ -24,13 +24,7 @@ public class QuizManager {
 
 
         try {
-
-            File folder = new File(".");
-
-            //listFiles(folder.listFiles());
-
-
-            File file = new File("/app/./Group4SlackBot/target/classes/quiz.json");
+            File file = new File("Group4SlackBot/target/classes/quiz.json");
 
             //File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
