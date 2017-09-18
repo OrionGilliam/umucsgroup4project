@@ -22,12 +22,7 @@ public class QuizManager {
     public QuizManager(int totalQuestions) {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
         try {
-
-            Path currentRelativePath = Paths.get("");
-            String s = currentRelativePath.toAbsolutePath().toString();
-            logger.error("Current relative path is: " + s);
-
-            logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*"));
+            logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*").toString());
 
             File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
