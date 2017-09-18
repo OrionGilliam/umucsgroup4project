@@ -108,11 +108,15 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
-    @Controller(pattern = "(setup meeting)", next = "confirmTiming")
-    public void setupMeeting(WebSocketSession session, Event event) {
-        startConversation(event, "confirmTiming");   // start conversation
-        reply(session, event, new Message("Cool! At what time (ex. 15:30) do you want me to set up the meeting?"));
-    }
+    /**
+     * @Controller(pattern = "(setup meeting)", next = "confirmTiming")
+     * public void setupMeeting(WebSocketSession session, Event event) {
+     * startConversation(event, "confirmTiming");   // start conversation
+     * reply(session, event, new Message("Cool! At what time (ex. 15:30) do you
+     * want me to set up the meeting?"));
+     * }
+    */
+
 
     /**
      * This method is chained with {@link SlackBot#setupMeeting(WebSocketSession, Event)}.
@@ -120,12 +124,16 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
-    @Controller(next = "askTimeForMeeting")
-    public void confirmTiming(WebSocketSession session, Event event) {
-        reply(session, event, new Message("Your meeting is set at " + event.getText() +
-                ". Would you like to repeat it tomorrow?"));
-        nextConversation(event);    // jump to next question in conversation
-    }
+    /**
+     * @Controller(next = "askTimeForMeeting")
+     * public void confirmTiming(WebSocketSession session, Event event) {
+     *   reply(session, event, new Message("Your meeting is set at " + event
+     *   .getText() +
+     *   ". Would you like to repeat it tomorrow?"));
+     *   nextConversation(event);    // jump to next question in conversation
+     * }
+    */
+
 
     /**
      * This method is chained with {@link SlackBot#confirmTiming(WebSocketSession, Event)}.
@@ -133,16 +141,23 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
-    @Controller(next = "askWhetherToRepeat")
-    public void askTimeForMeeting(WebSocketSession session, Event event) {
-        if (event.getText().contains("yes")) {
-            reply(session, event, new Message("Okay. Would you like me to set a reminder for you?"));
-            nextConversation(event);    // jump to next question in conversation  
-        } else {
-            reply(session, event, new Message("No problem. You can always schedule one with 'setup meeting' command."));
-            stopConversation(event);    // stop conversation only if user says no
-        }
-    }
+    /**
+     * @Controller(next = "askWhetherToRepeat")
+     * public void askTimeForMeeting(WebSocketSession session, Event event) {
+     *   if (event.getText().contains("yes")) {
+     *       reply(session, event, new Message("Okay. Would you like me to
+     *       set a reminder for you?"));
+     *       nextConversation(event);    // jump to next question in
+     *       conversation
+     *   } else {
+     *      reply(session, event, new Message("No problem. You can always
+     *      schedule one with 'setup meeting' command."));
+     *      stopConversation(event);    // stop conversation only if user
+     *       says no
+     *   }
+     * }
+     */
+
 
     /**
      * This method is chained with {@link SlackBot#askTimeForMeeting(WebSocketSession, Event)}.
@@ -150,13 +165,17 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
-    @Controller
-    public void askWhetherToRepeat(WebSocketSession session, Event event) {
-        if (event.getText().contains("yes")) {
-            reply(session, event, new Message("Great! I will remind you tomorrow before the meeting."));
-        } else {
-            reply(session, event, new Message("Oh! my boss is smart enough to remind himself :)"));
-        }
-        stopConversation(event);    // stop conversation
-    }
+    /**
+    * @Controller
+    * public void askWhetherToRepeat(WebSocketSession session, Event event) {
+    *    if (event.getText().contains("yes")) {
+    *        reply(session, event, new Message("Great! I will remind you
+    *         tomorrow before the meeting."));
+    *    } else {
+    *        reply(session, event, new Message("Oh! my boss is smart enough
+    *         to remind himself :)"));
+    *    }
+    *    stopConversation(event);    // stop conversation
+    * }
+    */
 }
