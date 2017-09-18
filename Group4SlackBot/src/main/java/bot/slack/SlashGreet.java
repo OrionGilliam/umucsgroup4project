@@ -12,17 +12,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+
+
 @RestController
 public class SlashGreet{
 
     private int numGreets = 0;
     private static final Logger logger = 
-            LoggerFactory.getLogger(BasicSlashCommandTemplate.class);
+            LoggerFactory.getLogger(SlashGreet.class);
 
     // gets token to validate command came from an authorized slack.com location
     @Value("${SlashGreetToken}")
     private String slackToken;
 
+
+    /**
+     * Slash Command handler. When a user types for example "/app help"
+     * then slack sends a POST request to this endpoint. So, this endpoint
+     * should match the url you set while creating the Slack Slash Command.
+     *
+     * @param token
+     * @param teamId
+     * @param teamDomain
+     * @param channelId
+     * @param channelName
+     * @param userId
+     * @param userName
+     * @param command
+     * @param text
+     * @param responseUrl
+     * @return
+     */
     // validates command values
     @RequestMapping(value = "/greet",
             method = RequestMethod.POST,
