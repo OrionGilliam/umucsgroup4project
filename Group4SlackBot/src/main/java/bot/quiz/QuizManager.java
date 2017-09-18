@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +23,12 @@ public class QuizManager {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
         try {
 
-           // ClassLoader classLoad = getClass().getClassLoader();
-            String test = ClassLoader.getSystemResource("application.properties").getPath();
-            logger.error(test);
+            Path currentRelativePath = Paths.get("");
+            String s = currentRelativePath.toAbsolutePath().toString();
+            logger.error("Current relative path is: " + s);
+
+            logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*"));
+
             File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
             JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
