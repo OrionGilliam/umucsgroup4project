@@ -22,7 +22,7 @@ public class QuizManager {
         try {
 
            // ClassLoader classLoad = getClass().getClassLoader();
-            String test = ClassLoader.getSystemResource(".").getPath();
+            String test = ClassLoader.getSystemResource("application.properties").getPath();
             logger.error(test);
             File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
