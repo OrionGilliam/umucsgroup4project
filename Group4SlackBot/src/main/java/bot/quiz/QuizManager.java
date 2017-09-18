@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 public class QuizManager {
@@ -24,11 +23,11 @@ public class QuizManager {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
         try {
 
-           Enumeration en =  ClassLoader.getSystemClassLoader().getResources("*");
+            File folder = new File(".");
 
-           while(en.hasMoreElements()){
-               logger.error("All resources:  "+ ClassLoader.getSystemClassLoader().getResources("*").nextElement());
-           }
+            listFiles(folder.listFiles());
+
+
 
 
             File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
@@ -98,5 +97,18 @@ public class QuizManager {
             }
         }
         return null;
+    }
+
+    private void listFiles(File[] listOfFiles){
+        for (int i = 0; i < listOfFiles.length; i++) {
+           if(listOfFiles[i].getName().equalsIgnoreCase("quiz.json")){
+               logger.error("It has been FOUND FOUND FOUND FOUND: " + listOfFiles[i].getAbsolutePath());
+           }else if (listOfFiles[i].isFile()) {
+                logger.error("File " + listOfFiles[i].getName());
+            } else if (listOfFiles[i].isDirectory()) {
+                logger.error("Directory " + listOfFiles[i].getName());
+                listFiles(listOfFiles[i].listFiles());
+            }
+        }
     }
 }
