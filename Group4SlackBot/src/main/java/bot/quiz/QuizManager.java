@@ -17,6 +17,8 @@ public class QuizManager {
     public QuizManager(int totalQuestions) throws IOException {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
         ClassLoader classLoad = getClass().getClassLoader();
+        String test = classLoad.getSystemResource(".").getPath();
+        System.out.println(test);
         File file = new File(classLoad.getSystemResource("quiz.json").getFile());
         byte[] bytes = Files.readAllBytes(file.toPath());
         JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
