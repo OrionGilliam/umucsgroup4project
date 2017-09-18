@@ -21,16 +21,18 @@ public class QuizManager {
 
     public QuizManager(int totalQuestions) {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
+
+
         try {
 
             File folder = new File(".");
 
-            listFiles(folder.listFiles());
+            //listFiles(folder.listFiles());
 
 
+            File file = new File("/app/./Group4SlackBot/target/classes/quiz.json");
 
-
-            File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
+            //File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
             byte[] bytes = Files.readAllBytes(file.toPath());
             JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
             new QuizQuestions(obj);
