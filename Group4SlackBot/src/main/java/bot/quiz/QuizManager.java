@@ -31,7 +31,7 @@ public class QuizManager {
 
             activeQuizes = new ArrayList<>();
         }catch(Exception e){
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
