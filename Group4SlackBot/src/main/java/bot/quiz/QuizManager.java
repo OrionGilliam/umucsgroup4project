@@ -1,6 +1,8 @@
 package bot.quiz;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,18 +15,24 @@ public class QuizManager {
 
     private List<ActiveQuiz> activeQuizes;
     private final int NUMBER_QUESTIONS_ASKED;
+    private static final Logger logger = LoggerFactory.getLogger(QuizManager.class);
 
-    public QuizManager(int totalQuestions) throws IOException {
+    public QuizManager(int totalQuestions) {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
-        ClassLoader classLoad = getClass().getClassLoader();
-        String test = classLoad.getSystemResource(".").getPath();
-        System.out.println(test);
-        File file = new File(classLoad.getSystemResource("quiz.json").getFile());
-        byte[] bytes = Files.readAllBytes(file.toPath());
-        JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
-        new QuizQuestions(obj);
+        try {
 
-        activeQuizes = new ArrayList<>();
+           // ClassLoader classLoad = getClass().getClassLoader();
+            String test = ClassLoader.getSystemResource(".").getPath();
+            logger.error(test);
+            File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
+            new QuizQuestions(obj);
+
+            activeQuizes = new ArrayList<>();
+        }catch(Exception e){
+            logger.error(e.getMessage());
+        }
     }
 
     public String conductQuiz(String userName, String text){
