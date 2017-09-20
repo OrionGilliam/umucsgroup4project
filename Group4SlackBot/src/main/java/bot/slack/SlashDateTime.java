@@ -72,7 +72,7 @@ public class SlashDateTime{
 
         // Check/get the timezone and build the response
         if (ZoneId.SHORT_IDS.containsKey(text.toUpperCase())) {
-            datetime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get(text)));
+            datetime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get(text.toUpperCase())));
             richMessage = new RichMessage(dTF.format(datetime));
         } else {
             richMessage = new RichMessage("Please use the format /datetime"
