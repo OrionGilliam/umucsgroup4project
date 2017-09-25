@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Sample Slash Command Handler.
- *
- * @author ramswaroop
- * @version 1.0.0, 20/06/2016
- */
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
 @RestController
 public class SlackSlashCommand {
 
