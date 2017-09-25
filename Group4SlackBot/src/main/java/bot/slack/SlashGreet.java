@@ -1,4 +1,4 @@
-package example.jbot.slack;
+package bot.slack;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,22 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Sample Slash Command Handler.
- *
- * @author ramswaroop
- * @version 1.0.0, 20/06/2016
- */
+
+
 @RestController
-public class SlackSlashCommand {
+public class SlashGreet{
 
-    private static final Logger logger = LoggerFactory.getLogger(SlackSlashCommand.class);
+    private int numGreets = 0;
+    private static final Logger logger = 
+            LoggerFactory.getLogger(SlashGreet.class);
 
-    /**
-     * The token you get while creating a new Slash Command. You
-     * should paste the token in application.properties file.
-     */
-    @Value("${slashCommandToken}")
+    // gets token to validate command came from an authorized slack.com location
+    @Value("${SlashGreetToken}")
     private String slackToken;
 
 
@@ -49,7 +44,8 @@ public class SlackSlashCommand {
      * @param responseUrl
      * @return
      */
-    @RequestMapping(value = "/orion-command",
+    // validates command values
+    @RequestMapping(value = "/greet",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
@@ -64,27 +60,32 @@ public class SlackSlashCommand {
                                              @RequestParam("response_url") String responseUrl) {
         // validate token
         if (!token.equals(slackToken)) {
-            return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
-        }
+            return new RichMessage("Invalid Slack Command Token.");
+        } // end if
 
-        /** build response */
-        RichMessage richMessage = new RichMessage("The is Slash Commander!");
+        // Build the response
+        RichMessage richMessage = new RichMessage("Hello " + userName + "!" 
+                + " Welcome to " + channelName + ".");
         richMessage.setResponseType("in_channel");
-        // set attachments
+        
+        // Attachments for the bottom of the response
         Attachment[] attachments = new Attachment[1];
         attachments[0] = new Attachment();
-        attachments[0].setText("I will perform all tasks for you.");
+        attachments[0].setText("I have been greeted (" + ++numGreets + ") times"
+                + " this session.");
         richMessage.setAttachments(attachments);
-        
-        // For debugging purpose only
+
+        // For debugging purposes
         if (logger.isDebugEnabled()) {
             try {
-                logger.debug("Reply (RichMessage): {}", new ObjectMapper().writeValueAsString(richMessage));
+                logger.debug("Reply (RichMessage): {}", 
+                        new ObjectMapper().writeValueAsString(richMessage));
             } catch (JsonProcessingException e) {
                 logger.debug("Error parsing RichMessage: ", e);
-            }
-        }
-        
-        return richMessage.encodedMessage(); // don't forget to send the encoded message to Slack
+            } // end t/c
+        } // end if
+
+        // output the reply
+        return richMessage.encodedMessage();
     }
 }

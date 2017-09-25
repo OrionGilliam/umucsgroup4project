@@ -1,0 +1,29 @@
+{
+  "1":{
+    "question": "What is the capital of California?",
+    "a": "Los Angeles",
+    "b": "Sacramento",
+    "c": "Gilroy",
+    "d": "San Francisco",
+    "answer":"b"
+  },
+
+  "2":{
+    "question": "Who scored the greated number of NHL goals?",
+    "a": "Brett Hull",
+    "b": "Jari Kurri",
+    "c": "Wayne Gretzky",
+    "d": "Keither Tkachuk",
+    "answer": "c"
+  },
+
+  "3":{
+    "question": "When founded in 1889, Nintendo was a producer of what product?",
+    "a": "Playing cards",
+    "b": "Board games",
+    "c": "Soap",
+    "d": "Swords",
+    "answer": "a"
+  }
+
+}

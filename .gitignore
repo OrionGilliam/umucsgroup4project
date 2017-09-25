@@ -1,4 +1,6 @@
-.idea/
-/.idea/
 /Group4SlackBot/Group4SlackBot.iml
 /Group4SlackBot/projectSlackBot.iml
+/Group4SlackBot/target/
+
+/.idea/
+/projectSlackBot.iml
