@@ -14,12 +14,9 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.regex.Matcher;
 
 /**
- * A Slack Bot sample. You can create multiple bots by just
- * extending {@link Bot} class like this one.
- *
- * @author ramswaroop
- * @version 1.0.0, 05/06/2016
- */
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
 @Component
 public class SlackBot extends Bot {
 
