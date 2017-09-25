@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 
-
+/**
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
 
 @RestController
 public class SlashQuiz {
