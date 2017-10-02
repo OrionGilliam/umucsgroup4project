@@ -14,12 +14,9 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.regex.Matcher;
 
 /**
- * A Slack Bot sample. You can create multiple bots by just
- * extending {@link Bot} class like this one.
- *
- * @author ramswaroop
- * @version 1.0.0, 05/06/2016
- */
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
 @Component
 public class SlackBot extends Bot {
 
@@ -44,32 +41,26 @@ public class SlackBot extends Bot {
 
     /**
      * Invoked when the bot receives a direct mention (@botname: message)
-     * or a direct message. NOTE: These two event types are added by jbot
-     * to make your task easier, Slack doesn't have any direct way to
-     * determine these type of events.
+     * or a direct message. 
      *
      * @param session
      * @param event
      */
     @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
     public void onReceiveDM(WebSocketSession session, Event event) {
-        reply(session, event, new Message("Hi, I am " + slackService.getCurrentUser().getName()));
+        reply(session, event, new Message("Hello! Type /helpme for more "
+                + "information."));
     }
 
     /**
-     * Invoked when bot receives an event of type message with text satisfying
-     * the pattern {@code ([a-z ]{2})(\d+)([a-z ]{2})}. For example,
-     * messages like "ab12xy" or "ab2bc" etc will invoke this method.
-     *
+     *Invoked when "help" is detected in chat.
+     * 
      * @param session
      * @param event
      */
-    @Controller(events = EventType.MESSAGE, pattern = "^([a-z ]{2})(\\d+)([a-z ]{2})$")
-    public void onReceiveMessage(WebSocketSession session, Event event, Matcher matcher) {
-        reply(session, event, new Message("First group: " + matcher.group(0) + "\n" +
-                "Second group: " + matcher.group(1) + "\n" +
-                "Third group: " + matcher.group(2) + "\n" +
-                "Fourth group: " + matcher.group(3)));
+    @Controller(events = EventType.MESSAGE, pattern = "(help)")
+    public void onReceiveMessage(WebSocketSession session, Event event) {
+        reply(session, event, new Message("If you need help, type /helpme"));
     }
 
     /**

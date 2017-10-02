@@ -14,15 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 
 /**
- * This is a Slack Webhook sample. Webhooks are nothing but POST calls to
- * Slack with data relevant to your users. You can send the data
- * in the POST call in either ways:
- * 1) Send as a JSON string as the payload parameter in a POST request
- * 2) Send as a JSON string as the body of a POST request
- *
- * @author ramswaroop
- * @version 1.0.0, 21/06/2016
- */
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
 @Component
 public class SlackWebhooks {
 

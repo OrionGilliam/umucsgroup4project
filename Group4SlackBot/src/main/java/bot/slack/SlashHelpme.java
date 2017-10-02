@@ -1,10 +1,8 @@
 package bot.slack;
 
-import bot.quiz.ActiveQuiz;
-import bot.quiz.QuizManager;
-import bot.quiz.QuizQuestions;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,33 +12,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
-
 /**
 * Basic code structure for this class created by user Ramswaroop
 * at https://github.com/ramswaroop/jbot/tree/master/jbot
 */
 
 @RestController
-public class SlashQuiz {
+public class SlashHelpme{
 
+    private int numGreets = 0;
+    private static final Logger logger = 
+            LoggerFactory.getLogger(SlashGreet.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(SlashQuiz.class);
-
-    //Insert your meaningful token name here
-    @Value("${slashQuizToken}")
+    // gets token to validate command came from an authorized slack.com location
+    @Value("${SlashHelpmeToken}")
     private String slackToken;
-
-    private QuizManager qm;
-
-    private final int QUESTIONS_TO_ASK = 2;
-
-    public SlashQuiz() throws IOException {
-     this.qm = new QuizManager(QUESTIONS_TO_ASK);
-    }
 
     /**
      * Slash Command handler. When a user types for example "/app help"
@@ -59,8 +45,8 @@ public class SlashQuiz {
      * @param responseUrl
      * @return
      */
-    //insert slash command value here
-    @RequestMapping(value = "/quiz",
+    // validates command values
+    @RequestMapping(value = "/helpme",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommand(@RequestParam("token") String token,
@@ -75,24 +61,39 @@ public class SlashQuiz {
                                              @RequestParam("response_url") String responseUrl) {
         // validate token
         if (!token.equals(slackToken)) {
-            return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
-        }
+            return new RichMessage("Invalid Slack Command Token.");
+        } // end if
 
+        // Build the response
+        RichMessage richMessage = new RichMessage("Hello " + userName + "." 
+                + " Below is a list of available commands:"
+                
+                + "\n/roll [xdy] - Simulates rolling x number of y capacity "
+                + "dice (eg. \"/roll 3d6\" rolls 3, 6 sided dice)"
+                
+                + "\n/greet - For waking and testing the bot"
+                
+                + "\n/wiki [search] - Retrieves the search from Wikipedia (eg. "
+                + "\"/wiki dogs\" returns the search for dogs)"
+                
+                + "\n/quiz - Starts a trivia game"
+                
+                + "\n/datetime [zone] - Retrieves the time for the given 3 "
+                + "letter time zone (eg. \"/datetime EST\" returns the date and "
+                + "time for Eastern Standard Time)");
+        richMessage.setResponseType("in_channel");
 
-        /** build response */
+        // For debugging purposes
+        if (logger.isDebugEnabled()) {
+            try {
+                logger.debug("Reply (RichMessage): {}", 
+                        new ObjectMapper().writeValueAsString(richMessage));
+            } catch (JsonProcessingException e) {
+                logger.debug("Error parsing RichMessage: ", e);
+            } // end t/c
+        } // end if
 
-        String response = "";
-
-
-        response = qm.conductQuiz(userName, text);
-
-        return formResponse(response).encodedMessage();
+        // output the reply
+        return richMessage.encodedMessage();
     }
-
-    private RichMessage formResponse(String response){
-        return new RichMessage(response);
-    }
-
-
-
 }

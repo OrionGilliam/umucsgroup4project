@@ -3,6 +3,11 @@ package bot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+* Basic code structure for this class created by user Ramswaroop
+* at https://github.com/ramswaroop/jbot/tree/master/jbot
+*/
+
 @SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "bot"})
 public class UmucSlackBotApplication {
 
