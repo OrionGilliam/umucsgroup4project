@@ -19,17 +19,13 @@ public class QuizManager {
     private final int NUMBER_QUESTIONS_ASKED;
     private static final Logger logger = LoggerFactory.getLogger(QuizManager.class);
 
-    public QuizManager(int totalQuestions) {
+    public QuizManager(int totalQuestions, JSONObject questions) {
         this.NUMBER_QUESTIONS_ASKED = totalQuestions;
 
 
         try {
-            File file = new File("Group4SlackBot/target/classes/quiz.json");
 
-            //File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
-            byte[] bytes = Files.readAllBytes(file.toPath());
-            JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
-            new QuizQuestions(obj);
+            new QuizQuestions(questions);
 
             activeQuizes = new ArrayList<>();
         }catch(Exception e){

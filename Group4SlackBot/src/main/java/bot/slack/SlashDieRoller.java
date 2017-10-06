@@ -1,5 +1,6 @@
 package bot.slack;
 
+import bot.dieroller.DieRoller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.ramswaroop.jbot.core.slack.models.Attachment;
@@ -67,7 +68,7 @@ public class SlashDieRoller {
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
         }
 
-
+/*
         String dice = text;
         String returnResult = "Dice rolled: ";
 
@@ -97,7 +98,7 @@ public class SlashDieRoller {
         }catch(Exception e){
             returnResult = "Dice format error";
         }
-
+*/
 
         //inserts initial greeting/first line of response
         RichMessage richMessage = new RichMessage("Dice Roller");
@@ -105,7 +106,8 @@ public class SlashDieRoller {
         // set attachments.  Assure that it is set to the number of lines you intend to add to the response
         Attachment[] attachments = new Attachment[1];
         attachments[0] = new Attachment();
-        attachments[0].setText(returnResult);
+        //attachments[0].setText(returnResult);
+        attachments[0].setText(DieRoller.rollByString(text));
         richMessage.setAttachments(attachments);
 
         // For debugging purpose only
