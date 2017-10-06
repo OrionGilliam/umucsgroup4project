@@ -99,6 +99,37 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
+    @Controller(pattern = "(\\bbutt\\b|\\bidiot\\b||\\bpiss\\b)", next = "apology")
+    public void shameSwearing(WebSocketSession session, Event event) {
+        startConversation(event, "apology");
+        reply(session, event, new Message("Why would you use that word, are you sorry?"));
+    }
+
+    /**
+     * This method is chained with {@link SlackBot#shameSwearing(WebSocketSession, Event)}.
+     *
+     * @param session
+     * @param event
+     */
+    @Controller
+    public void apology(WebSocketSession session, Event event) {
+        if(event.getText().equalsIgnoreCase("yes")){
+            reply(session, event, new Message("Good to hear, now be good"));
+        }else{
+            reply(session, event, new Message("You're bad and should feel bad for discovering that I have not power over you"));
+        }
+        stopConversation(event);    // jump to next question in conversation
+    }
+
+    /**
+     * Conversation feature of JBot. This method is the starting point of the conversation (as it
+     * calls {@link Bot#startConversation(Event, String)} within it. You can chain methods which will be invoked
+     * one after the other leading to a conversation. You can chain methods with {@link Controller#next()} by
+     * specifying the method name to chain with.
+     *
+     * @param session
+     * @param event
+     */
     /**
      * @Controller(pattern = "(setup meeting)", next = "confirmTiming")
      * public void setupMeeting(WebSocketSession session, Event event) {
