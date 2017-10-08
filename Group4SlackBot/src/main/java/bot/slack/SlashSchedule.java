@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.ParameterizedType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 @RestController
 public class SlashSchedule {
@@ -111,6 +115,9 @@ public class SlashSchedule {
             if (SlackBot.getEventList().contains(scheduleEvent)) {
                 throw new ScheduleException("AlreadyExists");
             }
+            if(timeInPast(scheduleEvent.getEventTime()) ){
+                throw new ScheduleException("PastDate");
+            }
             SlackBot.addScheduleEvent(scheduleEvent);
             richMessage.setText("Your event has been scheduled: " +
                     scheduleEvent.toString());
@@ -120,5 +127,23 @@ public class SlashSchedule {
 
         return richMessage;
 
+    }
+    public boolean timeInPast(String requestedTime) {
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm aaa");
+        Date currentTime = null;
+        try {
+            currentTime = timeFormatter.parse(timeFormatter.format(Calendar
+                    .getInstance().getTime()));
+        } catch (ParseException exec) {
+            exec.printStackTrace();
+        }
+        try {
+            if (currentTime.after(timeFormatter.parse(requestedTime))) {
+                return true;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 }
