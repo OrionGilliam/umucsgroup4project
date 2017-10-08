@@ -39,7 +39,20 @@ public class SlashQuiz {
     private final int QUESTIONS_TO_ASK = 2;
 
     public SlashQuiz() throws IOException {
-     this.qm = new QuizManager(QUESTIONS_TO_ASK);
+        try{
+            File file = new File("Group4SlackBot/target/classes/quiz.json");
+
+            //File file = new File(ClassLoader.getSystemResource("quiz.json").getFile());
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            JSONObject obj = new JSONObject(new String(bytes, "UTF-8"));
+            this.qm = new QuizManager(QUESTIONS_TO_ASK, obj);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+        }
+
+
+
+
     }
 
     /**
