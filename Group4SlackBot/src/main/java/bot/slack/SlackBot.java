@@ -1,5 +1,6 @@
 package bot.slack;
 
+import bot.common.ErrorMessaging;
 import bot.schedule.ScheduleEvent;
 import bot.schedule.ScheduleException;
 import me.ramswaroop.jbot.core.slack.Bot;
@@ -166,7 +167,7 @@ public class SlackBot extends Bot {
                     requestedTimeFrame + ":\n\n" + scheduleString));
         } catch (ScheduleException execep) {
             RichMessage accessor = new RichMessage();
-            SlashSchedule.setErrorMessage(execep, accessor);
+            ErrorMessaging.setErrorMessage(execep, accessor);
             reply(session, event, new Message(accessor.getText() + accessor
                     .getAttachments()[0].getText()));
         }
