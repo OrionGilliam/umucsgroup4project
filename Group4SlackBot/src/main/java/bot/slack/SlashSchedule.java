@@ -1,5 +1,6 @@
 package bot.slack;
 
+import bot.common.ErrorMessaging;
 import bot.schedule.ScheduleEvent;
 import bot.schedule.ScheduleException;
 import me.ramswaroop.jbot.core.slack.models.Attachment;
@@ -29,7 +30,7 @@ public class SlashSchedule {
      */
     @Value("${slashScheduleToken}")
     private String slackToken;
-
+/*
     public static void setErrorMessage(ScheduleException exec, RichMessage
             richMessage) {
         Attachment errorFix = new Attachment();
@@ -74,7 +75,7 @@ public class SlashSchedule {
         Attachment[] attachments = new Attachment[5];
         attachments[0] = errorFix;
         richMessage.setAttachments(attachments);
-    }
+    }*/
 
     /**
      * Slash Command handler. When a user types for example "/app help"
@@ -122,7 +123,7 @@ public class SlashSchedule {
             richMessage.setText("Your event has been scheduled: " +
                     scheduleEvent.toString());
         } catch (ScheduleException exec) {
-            setErrorMessage(exec, richMessage);
+            ErrorMessaging.setErrorMessage(exec, richMessage);
         }
 
         return richMessage;

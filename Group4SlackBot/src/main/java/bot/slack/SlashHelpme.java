@@ -1,5 +1,6 @@
 package bot.slack;
 
+import bot.help.HelpMe;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
@@ -63,7 +64,7 @@ public class SlashHelpme{
         if (!token.equals(slackToken)) {
             return new RichMessage("Invalid Slack Command Token.");
         } // end if
-
+/*
         // Build the response
         RichMessage richMessage = new RichMessage("Hello " + userName + "." 
                 + " Below is a list of available commands:"
@@ -80,7 +81,8 @@ public class SlashHelpme{
                 
                 + "\n/datetime [zone] - Retrieves the time for the given 3 "
                 + "letter time zone (eg. \"/datetime EST\" returns the date and "
-                + "time for Eastern Standard Time)");
+                + "time for Eastern Standard Time)");*/
+        RichMessage richMessage = new RichMessage(HelpMe.helpMessageUserGreet(userName));
         richMessage.setResponseType("in_channel");
 
         // For debugging purposes

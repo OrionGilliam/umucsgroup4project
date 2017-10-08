@@ -1,5 +1,6 @@
 package bot.slack;
 
+import bot.datetime.DateTimeChecker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -69,7 +70,7 @@ public class SlashDateTime{
         if (!token.equals(slackToken)) {
             return new RichMessage("Invalid Slack Command Token.");
         } // end if
-
+/*
         // Check/get the timezone and build the response
         if (ZoneId.SHORT_IDS.containsKey(text.toUpperCase())) {
             datetime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get(text.toUpperCase())));
@@ -77,7 +78,9 @@ public class SlashDateTime{
         } else {
             richMessage = new RichMessage("Please use the format /datetime"
                     + " <time zone>.  (ex. /datetime est)");
-        } // end if/else
+        } // end if/else*/
+
+        richMessage = DateTimeChecker.checkZone(text);
 
         richMessage.setResponseType("in_channel");
         
