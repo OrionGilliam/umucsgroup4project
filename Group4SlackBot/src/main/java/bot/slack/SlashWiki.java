@@ -78,7 +78,15 @@ public class SlashWiki {
                                              @RequestParam("command") String command,
                                              @RequestParam("text") String text,
                                              @RequestParam("response_url") String responseUrl) {
-        String searchEntry = text;
+        if (!token.equals(slackToken)) {
+            System.out.println("bad token!");
+            return new RichMessage("Slack token doesnt match expected " +
+                    "command token");
+        }
+        return getWikiResults(text).encodedMessage();
+
+    }
+    public RichMessage getWikiResults(String searchEntry) {
         //converts multi-term searches to the correct api format for the url
         searchEntry = searchEntry.replaceAll(" ", "%20");
         /*
@@ -92,11 +100,7 @@ public class SlashWiki {
         RichMessage richMessage = new RichMessage("");
         richMessage.setResponseType("in_channel");
         // validate token
-        if (!token.equals(slackToken)) {
-            System.out.println("bad token!");
-            return new RichMessage("Slack token doesnt match expected " +
-                    "command token");
-        }
+
         try {
             URL wikiURL = new URL(wikiUrl);
             try {
@@ -149,6 +153,7 @@ public class SlashWiki {
         } catch (IOException ex) {
             richMessage.setText("An IO exception occurred!");
         }
-        return richMessage.encodedMessage();
+        return richMessage;
     }
+
 }
