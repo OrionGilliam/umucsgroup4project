@@ -2,21 +2,14 @@ import bot.datetime.DateTimeChecker;
 import bot.dieroller.DieRoller;
 import bot.help.HelpMe;
 import bot.quiz.QuizManager;
-import bot.slack.SlashDieRoller;
-import bot.wiki.WikiPage;
-import bot.wiki.WikiResponse;
-import com.google.gson.Gson;
-import me.ramswaroop.jbot.core.slack.models.Attachment;
+import bot.slack.SlashSchedule;
+import bot.slack.SlashWiki;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Properties;
 
 public class slashCommandTests {
@@ -89,38 +82,35 @@ public class slashCommandTests {
     }
 
     @Test
-    public void wikiTest(){
-      RichMessage response = runWikiSearch("Albert Einstein");
+    public void wikiTest() {
+        RichMessage resultHolder;
+        SlashWiki slashWiki = new SlashWiki();
+        Assert.assertEquals(slashWiki.getWikiResults("Bsadas").getText(),
+                "I'm sorry! I could not find a wikipedia page with a title " +
+                        "of \"Bsadas\".");
 
-      boolean foundPage = false;
-
-      response.getText();
-
-      for(Attachment attach : response.getAttachments()){
-          if(attach.getText().contains("wikipedia.org"))
-              foundPage = true;
-      }
-
-        Assert.assertTrue(foundPage);
-
-        //known disambiguation page
-        response = runWikiSearch("jon fox");
-
-        foundPage = false;
-
-        if(response.getText().contains("could not find a wikipedia page"))
-            foundPage = false;
-
-        try{
-            for(Attachment attach : response.getAttachments()){
-                if(attach.getText().contains("wikipedia.org"))
-                    foundPage = true;
-            }
-        }catch(Exception e){
-
-        }
-        Assert.assertFalse(foundPage);
-
+        Assert.assertEquals((resultHolder = slashWiki.getWikiResults("barack " +
+                "obama")).getText(), "Barack obama");
+        Assert.assertEquals(resultHolder.getAttachments()[0].getText(), "From a " +
+                "miscapitalisation: " +
+                "This is a redirect from a miscapitalisation. The correct form is given " +
+                "by the target of the redirect.");
+        resultHolder = null;
+        Assert.assertEquals((resultHolder = slashWiki.getWikiResults("barack " +
+                "Obama")).getText
+                (), "Barack Obama");
+        Assert.assertEquals(resultHolder.getAttachments()[0].getText(), "Barack " +
+                "Hussein Obama II (US:  bə-RAHK hoo-SAYN oh-BAH-mə; born August 4, " +
+                "1961) is an American politician who served as the 44th President " +
+                "of the United States from 2009 to 2017. He is the first African American " +
+                "to have served as president.");
+        Assert.assertEquals(resultHolder.getAttachments()[1].getText(), "https://en.wikipedia.org/wiki/Barack_Obama");
+        Assert.assertEquals(slashWiki.getWikiResults("").getText(), "Error! Please " +
+                "enter something to query " +
+                "wikipedia for.");
+        Assert.assertEquals(slashWiki.getWikiResults("    ").getText(), "Error! " +
+                "Please enter something to query " +
+                "wikipedia for.");
     }
 
     @Test
@@ -154,74 +144,10 @@ public class slashCommandTests {
 
         Assert.assertTrue(testHelp.equals(correctResponse));
     }
+    @Test
+    public void testScheduleCommand(){
+        SlashSchedule slashSchedule = new SlashSchedule();
 
-    private RichMessage runWikiSearch(String text){
-        String searchEntry = text;
-        //converts multi-term searches to the correct api format for the url
-        searchEntry = searchEntry.replaceAll(" ", "%20");
-        /*
-         * url that uses the MediaWiki api to retrieve query results from
-         * wikipedia
-         */
-        String wikiUrl = "https://en.wikipedia.org/w/api.php?action=query" +
-                "&format=json&formatversion=2&prop=extracts%7Cinfo&titles" +
-                "=" + searchEntry + "&exsentences=2&exintro=1&explaintext=&inprop=url";
-        URLConnection urlConnection = null;
-        RichMessage richMessage = new RichMessage("");
-        richMessage.setResponseType("in_channel");
-        try {
-            URL wikiURL = new URL(wikiUrl);
-            try {
-                urlConnection = wikiURL.openConnection();
-                System.out.println("connection to wiki opened");
-            } catch (IOException ex) {
-                richMessage.setText("An io error occurred with the wiki link!");
-                return richMessage.encodedMessage();
-            }
-            InputStreamReader streamReader;
-            BufferedReader bufferedReader;
-            StringBuilder stringBuilder = new StringBuilder("");
-            if (urlConnection != null && urlConnection.getInputStream() != null) {
-                streamReader = new InputStreamReader(urlConnection
-                        .getInputStream());
-                bufferedReader = new BufferedReader(streamReader);
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-                Gson gson = new Gson();
-                WikiResponse response = gson.fromJson(stringBuilder.toString(),
-                        WikiResponse.class);
-                if (response.query.pages != null && response.query.pages.size() >
-                        0) {
-                    WikiPage firstReturnedPage = response.query.pages.get(0);
-                    if (firstReturnedPage.extract != null
-                            && !firstReturnedPage.extract.equals("")) {
-                        richMessage.setText(firstReturnedPage.title);
-                        Attachment titleAttachment = new Attachment();
-                        titleAttachment.setText(firstReturnedPage.extract);
-                        Attachment urlAttachment = new Attachment();
-                        urlAttachment.setText(firstReturnedPage.fullurl);
-                        Attachment[] attachments = new Attachment[2];
-                        attachments[0] = titleAttachment;
-                        attachments[1] = urlAttachment;
-                        richMessage.setAttachments(attachments);
-                    } else {
-                        richMessage.setText("I'm sorry! I could not find a" +
-                                " " +
-                                "wikipedia page with a title of \"" +
-                                firstReturnedPage.title + "\".");
-                    }
-                }
-            } else if (urlConnection == null) {
-                richMessage.setText("Error! The url connection was null!");
-            }
-        } catch (MalformedURLException exec) {
-            richMessage.setText("The given url is malformed!");
-        } catch (IOException ex) {
-            richMessage.setText("An IO exception occurred!");
-        }
 
-        return richMessage;
     }
 }
