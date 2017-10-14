@@ -3,7 +3,6 @@ package bot.slack;
 import bot.common.ErrorMessaging;
 import bot.schedule.ScheduleEvent;
 import bot.schedule.ScheduleException;
-import me.ramswaroop.jbot.core.slack.models.Attachment;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.ParameterizedType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,6 +28,55 @@ public class SlashSchedule {
      */
     @Value("${slashScheduleToken}")
     private String slackToken;
+
+    public static RichMessage getScheduleResults(String enteredText) {
+        RichMessage richMessage = new RichMessage();
+        try {
+            ScheduleEvent scheduleEvent = new ScheduleEvent(enteredText);
+            if (SlackBot.getEventList().contains(scheduleEvent)) {
+                throw new ScheduleException("AlreadyExists");
+            }
+            if (timeInPast(scheduleEvent.getEventTime(), scheduleEvent.getEventDate())) {
+                throw new ScheduleException("PastDate");
+            }
+            SlackBot.addScheduleEvent(scheduleEvent);
+            richMessage.setText("Your event has been scheduled: " +
+                    scheduleEvent.toString());
+        } catch (ScheduleException exec) {
+            ErrorMessaging.setErrorMessage(exec, richMessage);
+        }
+
+        return richMessage;
+    }
+
+    public static boolean timeInPast(String requestedTime, String requestedDate
+    ) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm aaa");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Date currentTime = null;
+        Date currentDate = null, enteredDate = null;
+        try {
+            currentTime = timeFormatter.parse(timeFormatter.format(calendar.getTime()));
+            currentDate = dateFormat.parse((calendar.get(Calendar.MONTH) +
+                    1) + "/" + calendar.get(Calendar.DATE) + "/" + calendar
+                    .get(Calendar.YEAR));
+            enteredDate = dateFormat.parse(requestedDate);
+
+        } catch (ParseException exec) {
+            exec.printStackTrace();
+        }
+        try {
+            if (currentTime.after(timeFormatter.parse(requestedTime)) &&
+                    (currentDate.equals(enteredDate) || currentDate.after(enteredDate)
+                    )) {
+                return true;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
 
     /**
      * Slash Command handler. When a user types for example "/app help"
@@ -62,43 +109,5 @@ public class SlashSchedule {
                                              @RequestParam("response_url") String responseUrl) {
         return getScheduleResults(text).encodedMessage();
 
-    }
-    public static RichMessage getScheduleResults(String enteredText) {
-        RichMessage richMessage = new RichMessage();
-        try {
-            ScheduleEvent scheduleEvent = new ScheduleEvent(enteredText);
-            if (SlackBot.getEventList().contains(scheduleEvent)) {
-                throw new ScheduleException("AlreadyExists");
-            }
-            if(timeInPast(scheduleEvent.getEventTime()) ){
-                throw new ScheduleException("PastDate");
-            }
-            SlackBot.addScheduleEvent(scheduleEvent);
-            richMessage.setText("Your event has been scheduled: " +
-                    scheduleEvent.toString());
-        } catch (ScheduleException exec) {
-            ErrorMessaging.setErrorMessage(exec, richMessage);
-        }
-
-        return richMessage;
-    }
-
-    public static boolean timeInPast(String requestedTime) {
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm aaa");
-        Date currentTime = null;
-        try {
-            currentTime = timeFormatter.parse(timeFormatter.format(Calendar
-                    .getInstance().getTime()));
-        } catch (ParseException exec) {
-            exec.printStackTrace();
-        }
-        try {
-            if (currentTime.after(timeFormatter.parse(requestedTime))) {
-                return true;
-            }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-        return false;
     }
 }
