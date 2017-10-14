@@ -2,6 +2,8 @@ import bot.datetime.DateTimeChecker;
 import bot.dieroller.DieRoller;
 import bot.help.HelpMe;
 import bot.quiz.QuizManager;
+import bot.schedule.ScheduleEvent;
+import bot.slack.SlackBot;
 import bot.slack.SlashSchedule;
 import bot.slack.SlashWiki;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
@@ -10,6 +12,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 public class slashCommandTests {
@@ -146,8 +152,119 @@ public class slashCommandTests {
     }
     @Test
     public void testScheduleCommand(){
+        RichMessage richMessage;
+        String eventText;
+        SlackBot slackBot = new SlackBot();
+        String reformattedDateText = "";
         SlashSchedule slashSchedule = new SlashSchedule();
 
+        Calendar calendar = Calendar.getInstance();
+
+
+        richMessage = slashSchedule.getScheduleResults("\"eventName\" Sunday 3:25 AM");
+        reformattedDateText = getDateDynamically("Sunday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"eventName\" on " + reformattedDateText + " at " +
+                "3:25" + " AM");
+        calendar = Calendar.getInstance();
+
+
+        richMessage = slashSchedule.getScheduleResults("\"new event\" Monday 7:48 PM");
+        reformattedDateText = getDateDynamically("Monday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                        "scheduled: \"new event\" on " + reformattedDateText +
+                " at 7:48 PM");
+        calendar = Calendar.getInstance();
+
+
+
+
+        richMessage = slashSchedule.getScheduleResults("\"Business meeting\" Tuesday 9:25 AM");
+        reformattedDateText = getDateDynamically("Tuesday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"Business meeting\" on " + reformattedDateText +
+                " at 9:25 AM");
+        calendar = Calendar.getInstance();
+
+
+
+        richMessage = slashSchedule.getScheduleResults("\"5k Run\" Wednesday 4:40 PM");
+        reformattedDateText = getDateDynamically("Wednesday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"5k Run\" on " + reformattedDateText +
+                " at 4:40 PM");
+        calendar = Calendar.getInstance();
+
+        richMessage = slashSchedule.getScheduleResults("\"Coffee at Starbucks\" Thursday " +
+                "12:04 PM");
+        reformattedDateText = getDateDynamically("Thursday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"Coffee at Starbucks\" on " + reformattedDateText +
+                " at 12:04 PM");
+        calendar = Calendar.getInstance();
+
+        richMessage = slashSchedule.getScheduleResults("\"Homework due\" Friday 8:52 AM");
+        reformattedDateText = getDateDynamically("Friday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"Homework due\" on " + reformattedDateText +
+                " at 8:52 AM");
+        calendar = Calendar.getInstance();
+        richMessage = slashSchedule.getScheduleResults("\"Gym\" Saturday 4:27 PM");
+        reformattedDateText = getDateDynamically("Saturday", calendar);
+        Assert.assertEquals( richMessage.getText(), "Your event has been " +
+                "scheduled: \"Gym\" on " + reformattedDateText +
+                " at 4:27 PM");
+        calendar = Calendar.getInstance();
+
+
+
+
+
+
+    }
+    public String retrieveDate(Calendar calendar) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Date currentDate = null;
+        String currentDateString = "";
+        try {
+            currentDate = dateFormat.parse((calendar.get
+                    (Calendar.MONTH) + 1) + "/" + calendar
+                    .get(Calendar.DAY_OF_MONTH) + "/" + calendar
+                    .get(Calendar.YEAR));
+            currentDateString = dateFormat.format(currentDate);
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return currentDateString;
+    }
+    public String getDateDynamically(String day, Calendar calendar) {
+        int dayDifference;
+        String dateSuffix, dateText, reformattedDateText = "";
+        int currentDayNumber;
+        Date currentDate = null;
+        SimpleDateFormat inputFormat;
+        dayDifference = ScheduleEvent.findDayDifference(day);
+        calendar.add(Calendar.DATE, dayDifference);
+        dateText = retrieveDate(calendar);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        try {
+            currentDate= dateFormat.parse(dateText);
+        } catch (ParseException excep) {
+            excep.printStackTrace();
+        }
+        currentDayNumber = ScheduleEvent.getDateFromText(dateText)[1];
+        dateSuffix = SlackBot.getDayNumberSuffix(currentDayNumber);
+        inputFormat = new SimpleDateFormat
+                ("EEEEEEEEE, MMMMMMMMM d'" + dateSuffix + "', yyyy");
+        try {
+            Date parsedDate = dateFormat.parse(dateText);
+            reformattedDateText = inputFormat.format(parsedDate);
+        } catch (ParseException execept) {
+            execept.printStackTrace();
+        }
+        return reformattedDateText;
 
     }
 }
