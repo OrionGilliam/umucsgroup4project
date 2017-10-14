@@ -442,7 +442,7 @@ public class SlackBot extends Bot {
      * @param session
      * @param event
      */
-    @Controller(pattern = "(\\bbutt\\b|\\bidiot\\b||\\bpiss\\b)", next = "apology")
+    @Controller(pattern = "(\\bbutt\\b|\\bidiot\\b|\\bpiss\\b)", next = "apology")
     public void shameSwearing(WebSocketSession session, Event event) {
         startConversation(event, "apology");
         reply(session, event, new Message("Why would you use that word, are you sorry?"));
