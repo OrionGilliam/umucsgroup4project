@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SlashHelpme{
 
-    private int numGreets = 0;
     private static final Logger logger = 
             LoggerFactory.getLogger(SlashGreet.class);
 
