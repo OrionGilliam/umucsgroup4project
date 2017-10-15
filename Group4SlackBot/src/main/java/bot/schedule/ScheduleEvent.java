@@ -28,6 +28,11 @@ public class ScheduleEvent implements Comparable<ScheduleEvent> {
                      * double quote
                      */
                     if (concatString.charAt(concatString.length() - 1) == '\"') {
+                        //if the event name is empty
+                        if(concatString.length() == 2 && countDoubleQuotes
+                                (concatString) == 2){
+                            throw new ScheduleException("EventFormat");
+                        }
                         eventName = concatString;
                         //removes excess spaces from event name
                         eventName = eventName.replaceAll("\\s+", " ");
@@ -81,9 +86,27 @@ public class ScheduleEvent implements Comparable<ScheduleEvent> {
      */
     public static int findDayDifference(String dateText) {
         Calendar referenceCalendar = Calendar.getInstance();
-        int dayValue = getDayValue(dateText);
+        dateText = dateText.toLowerCase();
         int dateDifference = 0;
-        //if event date is later is later in the week than current day
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        try  {
+            referenceCalendar.setTime(dateFormat.parse(dateText));
+            dateText = daysOfWeek.get(referenceCalendar.get(Calendar
+                    .DAY_OF_WEEK));
+            referenceCalendar = Calendar.getInstance();
+        } catch (ParseException exec) {
+
+        }
+
+        if (dateText.equals("today")) {
+            return 0;
+        }
+        if(dateText.equals("tomorrow")){
+            return 1;
+        }
+        int dayValue = getDayValue(dateText);
+
+        //if event date is later in the week than current day
         if (getDayValue(dateText) > referenceCalendar.get(Calendar.DAY_OF_WEEK)) {
             dateDifference = dayValue - referenceCalendar.get(Calendar.DAY_OF_WEEK);
         } else {
@@ -158,12 +181,7 @@ public class ScheduleEvent implements Comparable<ScheduleEvent> {
             if (daysOfWeek.containsValue(dateText.toLowerCase()) ||
                     dateText.toLowerCase().equals("today") || dateText
                     .toLowerCase().equals("tomorrow")) {
-                //if the given date string is a day of the week
-                if (daysOfWeek.containsValue(dateText.toLowerCase())) {
-                    dateDifference = findDayDifference(dateText);
-                } else if (dateText.toLowerCase().equals("tomorrow")) {
-                    dateDifference = 1;
-                }
+                dateDifference = findDayDifference(dateText);
                 if (daysOfWeek.containsValue(dateText.toLowerCase()) || dateText
                         .toLowerCase().equals("tomorrow")) {
                     calendar.add(Calendar.DATE, dateDifference);
