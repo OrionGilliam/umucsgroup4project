@@ -3,6 +3,7 @@ package bot.slack;
 import bot.common.ErrorMessaging;
 import bot.schedule.ScheduleEvent;
 import bot.schedule.ScheduleException;
+import me.ramswaroop.jbot.core.slack.Bot;
 import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

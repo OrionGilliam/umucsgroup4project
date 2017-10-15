@@ -38,63 +38,6 @@ public class SlackBot extends Bot {
     @Value("${slackBotToken}")
     private String slackToken;
 
-    public static String getDayNumberSuffix(int day) {
-        if (day >= 11 && day <= 13) {
-            return "th";
-        }
-        switch (day % 10) {
-            case 1:
-                return "st";
-            case 2:
-                return "nd";
-            case 3:
-                return "rd";
-            default:
-                return "th";
-        }
-    }
-
-    public static void addScheduleEvent(ScheduleEvent event) {
-        events.add(event);
-        Collections.sort(events);
-    }
-
-    // helper method for populating dates for a week request time frame
-    public static ArrayList<String> populateDayRange(String startDateString,
-                                                     String endDateString) {
-        ArrayList<String> rangeDates = new ArrayList<>();
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy");
-        Date startDate = null, endDate = null;
-        try {
-            startDate = inputFormat.parse(startDateString);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-        try {
-            endDate = inputFormat.parse(endDateString);
-        } catch (ParseException exec) {
-            exec.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        do {
-            rangeDates.add(inputFormat.format(startDate));
-            calendar.add(Calendar.DATE, 1);
-            try {
-                if (!startDate.equals(endDate)) {
-                    startDate = inputFormat.parse((calendar.get(Calendar.MONTH) + 1) +
-                            "/" + calendar.get(Calendar.DATE) + "/" + calendar.get
-                            (Calendar.YEAR));
-                }
-            } catch (ParseException exec) {
-                exec.printStackTrace();
-            }
-        } while (!startDate.equals(endDate));
-        return rangeDates;
-    }
-
-    public static ArrayList<ScheduleEvent> getEventList() {
-        return events;
-    }
 
     @Override
     public String getSlackToken() {
@@ -199,11 +142,104 @@ public class SlackBot extends Bot {
         logger.info("File shared: {}", event);
     }
 
-    private ArrayList<ScheduleEvent> getEvents(String requestedTimeFrame)
+
+    /**
+     * Conversation feature of JBot. This method is the starting point of the conversation (as it
+     * calls {@link Bot#startConversation(Event, String)} within it. You can chain methods which will be invoked
+     * one after the other leading to a conversation. You can chain methods with {@link Controller#next()} by
+     * specifying the method name to chain with.
+     *
+     * @param session
+     * @param event
+     */
+    @Controller(pattern = "(\\bbutt\\b|\\bidiot\\b||\\bpiss\\b)", next = "apology")
+    public void shameSwearing(WebSocketSession session, Event event) {
+        startConversation(event, "apology");
+        reply(session, event, new Message("Why would you use that word, are you sorry?"));
+    }
+
+    /**
+     * This method is chained with {@link SlackBot#shameSwearing(WebSocketSession, Event)}.
+     *
+     * @param session
+     * @param event
+     */
+    @Controller
+    public void apology(WebSocketSession session, Event event) {
+        if(event.getText().equalsIgnoreCase("yes")){
+            reply(session, event, new Message("Good to hear, now be good"));
+        }else{
+            reply(session, event, new Message("You're bad and should feel bad for discovering that I have not power over you"));
+        }
+        stopConversation(event);    // jump to next question in conversation
+    }
+
+    public static String getDayNumberSuffix(int day) {
+        if (day >= 11 && day <= 13) {
+            return "th";
+        }
+        switch (day % 10) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
+        }
+    }
+
+    public static void addScheduleEvent(ScheduleEvent event) {
+        events.add(event);
+        Collections.sort(events);
+    }
+
+    // helper method for populating dates for a week request time frame
+    public static ArrayList<String> populateDayRange(String startDateString,
+                                                     String endDateString) {
+        ArrayList<String> rangeDates = new ArrayList<>();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Date startDate = null, endDate = null;
+        try {
+            startDate = inputFormat.parse(startDateString);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            endDate = inputFormat.parse(endDateString);
+        } catch (ParseException exec) {
+            exec.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        int[] startDateArray = ScheduleEvent.getDateFromText(startDateString);
+        calendar.set(startDateArray[2], startDateArray[0]-1, startDateArray[1]);
+        do {
+            rangeDates.add(inputFormat.format(startDate));
+            calendar.add(Calendar.DATE, 1);
+            try {
+                if (!startDate.after(endDate)) {
+                    startDate = inputFormat.parse((calendar.get(Calendar.MONTH) + 1) +
+                            "/" + calendar.get(Calendar.DATE) + "/" + calendar.get
+                            (Calendar.YEAR));
+                }
+            } catch (ParseException exec) {
+                exec.printStackTrace();
+            }
+        } while (!startDate.after(endDate));
+        return rangeDates;
+    }
+
+    public static ArrayList<ScheduleEvent> getEventList() {
+        return events;
+    }
+
+
+    public static ArrayList<ScheduleEvent> getEvents(String requestedTimeFrame)
             throws ScheduleException {
         ArrayList<ScheduleEvent> requestedEvents = new ArrayList<>();
         ArrayList<String> dayInputs = new ArrayList<>();
-        ArrayList<String> rangeDates = new ArrayList<>();
+        ArrayList<String> rangeDates;
         setupDayInputs(dayInputs);
         boolean isDateFormat = false;
         Calendar calendar = Calendar.getInstance();
@@ -226,12 +262,11 @@ public class SlackBot extends Bot {
             isDateFormat = true;
         } catch (ParseException exec) {
             int requestedDayDifference = 0;
-            if (ScheduleEvent.daysOfWeek.containsValue(requestedTimeLower)) {
-
+            if (ScheduleEvent.daysOfWeek.containsValue(requestedTimeLower) ||
+                    requestedTimeLower.equals("tomorrow") ||
+                    requestedTimeLower.equals("today")) {
                 requestedDayDifference = ScheduleEvent.findDayDifference
                         (requestedTimeLower);
-            } else if (requestedTimeLower.equals("tomorrow")) {
-                requestedDayDifference = 1;
             } else if (requestedTimeLower.equals("next week")) {
                 requestedDayDifference = ScheduleEvent.findDayDifference
                         (ScheduleEvent.daysOfWeek.get(calendar
@@ -420,7 +455,7 @@ public class SlackBot extends Bot {
     }
 
     //helper method that assigns a list of individual day strings
-    public void setupDayInputs(ArrayList<String> dayInputs) {
+    public static void setupDayInputs(ArrayList<String> dayInputs) {
         dayInputs.add("today");
         dayInputs.add("tomorrow");
         dayInputs.add("sunday");
@@ -431,38 +466,11 @@ public class SlackBot extends Bot {
         dayInputs.add("friday");
         dayInputs.add("saturday");
     }
-
-
-    /**
-     * Conversation feature of JBot. This method is the starting point of the conversation (as it
-     * calls {@link Bot#startConversation(Event, String)} within it. You can chain methods which will be invoked
-     * one after the other leading to a conversation. You can chain methods with {@link Controller#next()} by
-     * specifying the method name to chain with.
-     *
-     * @param session
-     * @param event
-     */
-    @Controller(pattern = "(\\bbutt\\b|\\bidiot\\b||\\bpiss\\b)", next = "apology")
-    public void shameSwearing(WebSocketSession session, Event event) {
-        startConversation(event, "apology");
-        reply(session, event, new Message("Why would you use that word, are you sorry?"));
+    public static void resetEventList() {
+        events = new ArrayList<>();
     }
 
-    /**
-     * This method is chained with {@link SlackBot#shameSwearing(WebSocketSession, Event)}.
-     *
-     * @param session
-     * @param event
-     */
-    @Controller
-    public void apology(WebSocketSession session, Event event) {
-        if(event.getText().equalsIgnoreCase("yes")){
-            reply(session, event, new Message("Good to hear, now be good"));
-        }else{
-            reply(session, event, new Message("You're bad and should feel bad for discovering that I have not power over you"));
-        }
-        stopConversation(event);    // jump to next question in conversation
-    }
+
 
     /**
      * Conversation feature of JBot. This method is the starting point of the conversation (as it
